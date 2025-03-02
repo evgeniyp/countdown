@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #timer {
+            font-size: 2em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Countdown Timer</h1>
+    <div id="timer">10:00</div>
+    
+    <script>
+        let countdown = 600; // 10 minutes in seconds
+        let timerDisplay = document.getElementById('timer');
+        let timerInterval;
+        let lastTime = Date.now();
+
+        function updateTimerDisplay() {
+            let minutes = Math.floor(countdown / 60);
+            let seconds = countdown % 60;
+            timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (!timerInterval) {
+                timerInterval = setInterval(() => {
+                    let now = Date.now();
+                    let elapsed = Math.floor((now - lastTime) / 1000);
+                    lastTime = now;
+
+                    if (elapsed > 0) {
+                        countdown = Math.max(countdown - elapsed, 0);
+                        updateTimerDisplay();
+                        if (countdown === 0) stopTimer();
+                    }
+                }, 1000);
+            }
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                stopTimer();
+            } else {
+                lastTime = Date.now(); // Reset time reference
+                startTimer();
+            }
+        });
+
+        window.addEventListener("focus", () => {
+            lastTime = Date.now();
+            startTimer();
+        });
+
+        window.addEventListener("blur", stopTimer);
+
+        updateTimerDisplay();
+        startTimer();
+    </script>
+</body>
+</html>
